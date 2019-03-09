@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
-const port = 3000
+const config = require('./config');
 
 app.use(bodyParser.json())
 app.use(
@@ -22,6 +22,6 @@ app.put('/users/:id', db.updateUser)
 app.delete('/users/:id', db.deleteUser)
 
 // port listening
-app.listen(port, () => {
-    console.log(`App running on port ${port}.`)
+app.listen(config.port, () => {
+    console.log(`App running on port ${config.port}.`)
 })
