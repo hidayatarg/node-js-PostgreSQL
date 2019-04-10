@@ -1,4 +1,6 @@
 const pool = require('./pool')
+const bcrypt = require('bcryptjs')
+const config = require('./config')
 
 const getUsers = (request, response) => {
     pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
@@ -23,15 +25,29 @@ const getUserById = (request, response) => {
 const createUser = (request, response) => {
     const {
         name,
-        email
+        email,
+        password
     } = request.body
 
-    pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
-        if (error) {
-            throw error
+    bcrypt.hash(password, 8, (err, hash) => {
+        if (err) {
+            return res.status(500).json({
+                error: err
+            })
+        } else {
+            pool.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3)', [name, email, hash], (error, results) => {
+                if (error) {
+                    throw error
+                }
+                response.status(201).json({
+                    success: true,
+                    message: 'User has been created successfully'
+                })
+            })    
         }
-        response.status(201).send(`User added with ID: ${results.insertId}`)       
     })
+
+   
 }
 
 const updateUser = (request, response) => {
