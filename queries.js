@@ -1,14 +1,22 @@
-const pool = require('./pool')
+const { getConnection } = require('./pool')
 const bcrypt = require('bcryptjs')
-const config = require('./config')
 
-const getUsers = (request, response) => {
-    pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
-        if (error) {
-            throw error
-        }
-        response.status(200).json(results.rows)
-    })
+const dbConnection = getConnection()
+
+// old
+// const getUsers = (request, response) => {
+//     pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
+//         if (error) {
+//             throw error
+//         }
+//         response.status(200).json(results.rows)
+//     })
+// }
+
+const getUsers = async (request, response) => {
+    const result = await dbConnection.listUser()
+    console.log('gelen cevap: ', result);
+
 }
 
 const getUserById = (request, response) => {
@@ -43,11 +51,11 @@ const createUser = (request, response) => {
                     success: true,
                     message: 'User has been created successfully'
                 })
-            })    
+            })
         }
     })
 
-   
+
 }
 
 const updateUser = (request, response) => {
